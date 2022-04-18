@@ -27,6 +27,7 @@ class The_Project_Post_Type {
     $this->supports = !empty($data['supports']) ? $data['supports'] : ['title', 'editor', 'thumbnail'];
     $this->has_archive = $has_archive;
     $this->posts_per_page = !empty($data['posts_per_page']) ? $data['posts_per_page'] : 12;
+    $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == 'false' ? false : true;
 
     // Rewrite URL
     // POST_TYPE_SLUG/%TAXONOMY_NAME%
@@ -69,7 +70,7 @@ class The_Project_Post_Type {
       "supports" => $this->supports,
       "has_archive" => $this->has_archive ?  $this->slug : false, // POST_TYPE_SLUG
       "exclude_from_search" => $this->exclude_from_search,
-      "show_in_rest" => true,
+      "show_in_rest" => $this->gutenberg,
     ];
 
     // POST_TYPE_SLUG/%TAXONOMY_NAME%
