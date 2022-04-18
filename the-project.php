@@ -1,22 +1,54 @@
-# The Project
-WordPress plugin for building custom websites.
+<?php
+/**
+ *  Plugin Name: The Project
+ *  Description: Custom project plugin
+ *  Version: 1000.0.1
+ *  Author: kreativan.dev
+ *  Author URI: http://kreativan.dev/
+ */
 
-### Features
-* Custom Settings
-* Custom Admin Pages 
-* Less Compiler
-* Valitron Library
-* Ajax routing: `/ajax/test/ => my_theme/ajax/tets.php`
-* HTMX integration and routing: `/htmx/test/ => my_theme/htmx/test.php`
-* SMTP options
-* JavaScript helpers
-* Easy to add new admin menu items
-* Easy to create custom post types
-* The Project Theme - works great with my `the-project-theme` wordpress starter theme...
+// includes
+include_once("inc/the-project-class.php");
+include_once("inc/project-menu-class.php");
+include_once("inc/settings-class.php"); 
+include_once("inc/settings-field-class.php"); 
+include_once("inc/post-type-class.php");
+include_once("inc/less-compiler.php");
+include_once("functions.php");
 
-### Init Project
-```
-// Init project
+
+/**
+ *  The Project Data
+ *  @param string $field
+ *  @return array|string
+ */
+
+function the_project($field = "") {
+
+  $project = [
+
+    "name" => "Kreativan",
+    "title" => "Custom Project",
+    "developer" => "Ivan Milincic",
+    "website" => "https://kreativan.dev"
+
+  ];
+
+  $settings = get_option('project_settings');
+  $arr = array_merge($project, $settings);
+  
+  if($field != "") {
+    return isset($arr[$field]) ? $arr[$field] : "";
+  } else {
+    return $arr;
+  }
+
+}
+
+//-------------------------------------------------------- 
+//  Init Project
+//-------------------------------------------------------- 
+
 new The_Project([
 
   // Project Title
@@ -72,15 +104,14 @@ new The_Project([
   ],
 
 ]);
-```
-### Init Project Settings
-```
-new The_Project_Settings;
-```
 
-### Admin Menus
-Use The_Project_Menu` class to add admin submenus
-```
+// Init Project Settings
+new The_Project_Settings;
+
+//-------------------------------------------------------- 
+//  Menus
+//-------------------------------------------------------- 
+
 new The_Project_Menu([
   "title" => "Hero",
   "slug" => "edit.php?post_type=hero"
@@ -96,12 +127,11 @@ new The_Project_Menu([
   "title" => "Settings",
   "slug" => "options-general.php?page=project-settings",
 ]);
-```
 
-### Create Post Types
-Use `The_Project_Post_Type` to create new post types
-```
-// With Archive
+//-------------------------------------------------------- 
+//  Post Types
+//-------------------------------------------------------- 
+
 $katalog = [
   "name" => "katalog",
   "title" => "Katalog",
@@ -118,7 +148,7 @@ $katalog = [
 
 new The_Project_Post_Type($katalog);
 
-// Pages only
+
 $hero = [
   "name" => "hero",
   "title" => "Hero",
@@ -135,93 +165,17 @@ $hero = [
 ];
 
 new The_Project_Post_Type($hero);
-```
 
-### Add Settings
-Use `The_Project_Settings_Field` to add custom settings.
-```
-new The_Project_Settings_Field([
-  "name" => "my_field",
-  "title" => "My Field"
-  "type" => "radio", // text, number, radio
-  "options" => ["one" => "1", "two" => "2"]
-])
 
-// Example
+//-------------------------------------------------------- 
+//  Settings
+//-------------------------------------------------------- 
 
 $katalog_per_page = [
   "name" => "katalog_per_page",
   "title" => "Katalog items per page",
   "type" => "number",
+  "class" => "small-text",
 ];
 
 new The_Project_Settings_Field($katalog_per_page);
-```
-
-## Less Compiler
-Compile less files using built-in less compiler
-```
-<?php
-// $output_dir is optional, default "assets"
-$lessCompiler = new Less_Compiler($output_dir);
-?>
-
-<link rel="stylesheet" type="text/css" href="<?= $lessCompiler->less($less_files, $less_vars, "main", $dev_mode); ?>">
-```
-
-## Project Functions
-Use project functions and methods.
-```
-$project = new The_Project_Func;
-
-// Hello
-echo $project->hello;
-
-```
-
-### Valitron
-Use built-in valitron library to validate your forms.
-```
-$project = new The_Project_Func;
-$v = $project->valitron($_POST);
-$v = $v->rule('email', 'email');
-if ( !$v->validate() ) print_r( $v->errors() );
-```
-
-### Menu items
-Get menu items as array.
-```
-$project = new The_Project_Func;
-
-// pass the menu name as argument
-$navbar = $project->menu_items('navbar');
-
-foreach($navbar as $item) {
-  print_r($item);
-}
-```
-
-### Project.js
-Project JavaScript helper functions...
-```
-// Submit form as ajax req on form action url eg: action="/ajax/test-form/"
-// this will automatically collect form data and send it to the action url...
-<button type="button" onclick="project.formSubmit('my_form_id')">
-  Form Submit
-</button>
-
-// Send ajax request to the url
-<button type="button" onclick="project.ajaxReq('/ajax/test/?key=value')">
-  Ajax Req
-</button>
-```
-
-### Ajax
-```
-To do...
-```
-
-### HTMX
-```
-To do...
-```
