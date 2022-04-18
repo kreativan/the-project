@@ -111,7 +111,7 @@ Use `The_Project_Settings_Field` to add custom settings.
 new The_Project_Settings_Field([
   "name" => "my_field",
   "title" => "My Field"
-  "type" => "radio", // text, number, radio
+  "type" => "radio", // text, number, radio, select, email, password
   "options" => ["one" => "1", "two" => "2"]
 ])
 
