@@ -12,7 +12,8 @@ WordPress plugin for building custom websites.
 * JavaScript helpers
 * Easy to add new admin menu items
 * Easy to create custom post types
-* The Project Theme - works great with my `the-project-theme` wordpress starter theme...
+* The Project Theme - works great with my `the-project-theme` wordpress starter theme. You can get it from
+<a href="https://github.com/kreativan/the-project-theme">here</a>.
 
 ### Project Data
 Set project data here, then it can be used as `the_project('field_name')`. All project settings are also included here...
