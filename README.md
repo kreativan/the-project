@@ -14,9 +14,34 @@ WordPress plugin for building custom websites.
 * Easy to create custom post types
 * The Project Theme - works great with my `the-project-theme` wordpress starter theme...
 
+### Project Data
+Set project data here, then it can be used as `the_project('field_name')`. All project settings are also included here...
+```
+function the_project($field = "") {
+
+  $project = [
+
+    "name" => "Kreativan",
+    "title" => "Custom Project",
+    "developer" => "Ivan Milincic",
+    "website" => "https://kreativan.dev"
+
+  ];
+
+  $settings = get_option('project_settings');
+  $arr = array_merge($project, $settings);
+  
+  if($field != "") {
+    return isset($arr[$field]) ? $arr[$field] : "";
+  } else {
+    return $arr;
+  }
+
+}
+```
+
 ### Init Project
 ```
-// Init project
 new The_Project([
 
   // Project Title
