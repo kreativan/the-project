@@ -201,7 +201,6 @@ $project = new The_Project_Func;
 
 // Hello
 echo $project->hello;
-
 ```
 
 ### Valitron
@@ -210,7 +209,9 @@ Use built-in valitron library to validate your forms.
 $project = new The_Project_Func;
 $v = $project->valitron($_POST);
 $v = $v->rule('email', 'email');
-if ( !$v->validate() ) print_r( $v->errors() );
+if ( !$v->validate() ) {
+  print_r( $v->errors() )
+};
 ```
 
 ### Menu items
