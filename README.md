@@ -99,9 +99,31 @@ new The_Project([
 
 ]);
 ```
+
 ### Init Project Settings
 ```
 new The_Project_Settings;
+```
+
+### Add Settings
+Use `The_Project_Settings_Field` to add custom settings.
+```
+new The_Project_Settings_Field([
+  "name" => "my_field",
+  "title" => "My Field"
+  "type" => "radio", // text, number, radio
+  "options" => ["one" => "1", "two" => "2"]
+])
+
+// Example
+
+$katalog_per_page = [
+  "name" => "katalog_per_page",
+  "title" => "Katalog items per page",
+  "type" => "number",
+];
+
+new The_Project_Settings_Field($katalog_per_page);
 ```
 
 ### Admin Menus
@@ -161,27 +183,6 @@ $hero = [
 ];
 
 new The_Project_Post_Type($hero);
-```
-
-### Add Settings
-Use `The_Project_Settings_Field` to add custom settings.
-```
-new The_Project_Settings_Field([
-  "name" => "my_field",
-  "title" => "My Field"
-  "type" => "radio", // text, number, radio
-  "options" => ["one" => "1", "two" => "2"]
-])
-
-// Example
-
-$katalog_per_page = [
-  "name" => "katalog_per_page",
-  "title" => "Katalog items per page",
-  "type" => "number",
-];
-
-new The_Project_Settings_Field($katalog_per_page);
 ```
 
 ## Less Compiler

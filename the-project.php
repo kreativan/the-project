@@ -105,8 +105,23 @@ new The_Project([
 
 ]);
 
+//-------------------------------------------------------- 
+//  Settings
+//-------------------------------------------------------- 
+
 // Init Project Settings
 new The_Project_Settings;
+
+// Add settings Fields
+
+$katalog_per_page = [
+  "name" => "katalog_per_page",
+  "title" => "Katalog items per page",
+  "type" => "number",
+  "class" => "small-text",
+];
+
+new The_Project_Settings_Field($katalog_per_page);
 
 //-------------------------------------------------------- 
 //  Menus
@@ -165,17 +180,3 @@ $hero = [
 ];
 
 new The_Project_Post_Type($hero);
-
-
-//-------------------------------------------------------- 
-//  Settings
-//-------------------------------------------------------- 
-
-$katalog_per_page = [
-  "name" => "katalog_per_page",
-  "title" => "Katalog items per page",
-  "type" => "number",
-  "class" => "small-text",
-];
-
-new The_Project_Settings_Field($katalog_per_page);
