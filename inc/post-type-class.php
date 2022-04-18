@@ -69,6 +69,7 @@ class The_Project_Post_Type {
       "supports" => $this->supports,
       "has_archive" => $this->has_archive ?  $this->slug : false, // POST_TYPE_SLUG
       "exclude_from_search" => $this->exclude_from_search,
+      "show_in_rest" => true,
     ];
 
     // POST_TYPE_SLUG/%TAXONOMY_NAME%
