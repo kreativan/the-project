@@ -159,6 +159,7 @@ $katalog = [
   "category_name" => "katalog_category",
   "rewrite" => "katalog/%katalog_category%",
   "rewrite_func" => "true",
+  "gutenberg" => "false"
 ];
 
 new The_Project_Post_Type($katalog);
@@ -177,6 +178,7 @@ $hero = [
   "has_archive" => "false",
   "rewrite" => "false",
   "rewrite_func" => "false",
+  "gutenberg" => "false"
 ];
 
 new The_Project_Post_Type($hero);
