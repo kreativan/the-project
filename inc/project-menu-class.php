@@ -13,6 +13,7 @@ class The_Project_Menu {
     $this->slug = !empty($data["slug"]) ? $data["slug"] : "";
     $this->view = !empty($data["view"]) ? $data["view"] : "";
     $this->parent = !empty($data["parent"]) ? $data["parent"] : "project";
+    $this->position = !empty($data["position"]) ? $data["position"] : null;
 
     add_action('admin_menu', [$this, 'add_project_menu']);
 
@@ -30,6 +31,7 @@ class The_Project_Menu {
       'manage_options', // permision
       $this->slug, // slug 
       $callback, // callback function
+      $this->position,
     );
 
   }
