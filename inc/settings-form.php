@@ -1,4 +1,3 @@
-<h1><?= the_project("name") ?> Settings</h1>
 <form id="project-settings-form" action="options.php" method="post">
   <?php 
     settings_fields('project_settings');

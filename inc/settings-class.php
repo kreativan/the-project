@@ -21,8 +21,8 @@ class The_Project_Settings {
   // Settings Page
   public function settings_page() {
     add_options_page(
-      the_project("name") . ' Settings', // page_title
-      the_project("name"), // menu_title
+      'Developer Settings', // page_title
+      'Developer', // menu_title
       'manage_options', // permision
       'project-settings', // slug
       [$this, 'render_settings_page']
@@ -48,25 +48,13 @@ class The_Project_Settings {
     );
 
     //
-    //  Project Specific
-    //
-
-    add_settings_section(
-      'project_specific_options', // id
-      'Options', // title
-      '', // callback function
-      'project-settings' // slug-name of the settings page
-    );
-
-
-    //
-    //  Development
+    //  Fields
     //
 
     add_settings_section(
       'dev_options', // id
-      'Development', // title
-      '', // callback function
+      '', // title
+      [$this, 'render_settings_headline'], // callback function
       'project-settings' // slug-name of the settings page
     );
 
@@ -185,8 +173,12 @@ class The_Project_Settings {
 
 
   //
-  //  Render Development
+  //  Render
   //
+
+  public function render_settings_headline() {
+    echo "<h1>Developer Settings</h1>";
+  }
 
   public function render_dev_mode() {
     $options = get_option('project_settings');

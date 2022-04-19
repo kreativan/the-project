@@ -48,9 +48,12 @@ new The_Project([
   // Project Title
   "title" => the_project('name'),
 
+  // Admin menu
+  "menu" => "true",
+
   // Admin menu icon
   "icon" => 'dashicons-superhero',
-
+ 
   /**
    *  Enable ajax route on front end?
    *  http request on /ajax/my-file/
@@ -100,12 +103,12 @@ new The_Project([
 ]);
 ```
 
-### Init Project Settings
+### Init Project Settings (Developer Settings)
 ```
 new The_Project_Settings;
 ```
 
-### Add Settings
+### Add Developer Settings
 Use `The_Project_Settings_Field` to add custom settings.
 ```
 new The_Project_Settings_Field([
@@ -117,13 +120,13 @@ new The_Project_Settings_Field([
 
 // Example
 
-$katalog_per_page = [
-  "name" => "katalog_per_page",
-  "title" => "Katalog items per page",
-  "type" => "number",
+$my_custom_dev_setting = [
+  "name" => "custom_dev_setting",
+  "title" => "Custom dev setting",
+  "type" => "text",
 ];
 
-new The_Project_Settings_Field($katalog_per_page);
+new The_Project_Settings_Field($my_custom_dev_setting);
 ```
 
 ### Admin Menus
@@ -138,11 +141,6 @@ new The_Project_Menu([
   "title" => "Submenu",
   "slug" => "project-submenu",
   "view" => "submenu",
-]);
-
-new The_Project_Menu([
-  "title" => "Settings",
-  "slug" => "options-general.php?page=project-settings",
 ]);
 ```
 

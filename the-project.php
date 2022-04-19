@@ -54,6 +54,9 @@ new The_Project([
   // Project Title
   "title" => the_project('name'),
 
+  // admin menu
+  "menu" => "true",
+
   // Admin menu icon
   "icon" => 'dashicons-superhero',
 
@@ -109,19 +112,22 @@ new The_Project([
 //  Settings
 //-------------------------------------------------------- 
 
-// Init Project Settings
+// Init Project Settings (Developer Settings)
 new The_Project_Settings;
 
-// Add settings Fields
+// ASF Options Page
+if(function_exists('acf_add_options_page')) {
 
-$katalog_per_page = [
-  "name" => "katalog_per_page",
-  "title" => "Katalog items per page",
-  "type" => "number",
-  "class" => "small-text",
-];
+  acf_add_options_page([
+    'page_title' => 'Website Settings',
+    'menu_title' => 'Website Settings',
+    'menu_slug' => 'website-settings', 
+    'capability' => 'edit_posts',
+    'parent_slug' => 'project',
+  ]);
 
-new The_Project_Settings_Field($katalog_per_page);
+}
+
 
 //-------------------------------------------------------- 
 //  Menus
@@ -138,14 +144,11 @@ new The_Project_Menu([
   "view" => "submenu",
 ]);
 
-new The_Project_Menu([
-  "title" => "Settings",
-  "slug" => "options-general.php?page=project-settings",
-]);
-
 //-------------------------------------------------------- 
 //  Post Types
 //-------------------------------------------------------- 
+
+$katalog_per_page = get_field("katalog_per_page", "options");
 
 $katalog = [
   "name" => "katalog",
@@ -155,7 +158,7 @@ $katalog = [
   "menu_position" => 2,
   "menu_icon" => "dashicons-archive",
   "has_archive" => "true",
-  "posts_per_page" => the_project('katalog_per_page'),
+  "posts_per_page" => $katalog_per_page,
   "category_name" => "katalog_category",
   "rewrite" => "katalog/%katalog_category%",
   "rewrite_func" => "true",

@@ -34,7 +34,7 @@ class The_Project_Settings_Field {
       $this->title, // title 
       [$this, "render_{$this->type}"], // callback func
       'project-settings', // slug-name of the settings page
-      'project_specific_options' // section
+      'dev_options' // section
     );
   }
 

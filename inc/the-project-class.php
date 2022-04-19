@@ -9,6 +9,7 @@ class The_Project {
 
   public function __construct($data) {
 
+    $this->menu = !empty($data["menu"]) && $data["menu"] == "false" ? false : true; 
     $this->title = !empty($data["title"]) ? $data["title"] : ''; 
     $this->icon = !empty($data["icon"]) ? $data["icon"] : 'dashicons-superhero'; 
     $this->ajax = !empty($data["ajax"]) && $data["ajax"] == "false" ? false : true; 
@@ -49,7 +50,7 @@ class The_Project {
     //
 
     // Admin menu
-    add_action('admin_menu', [$this, 'project_admin_menu']);
+    if($this->menu) add_action('admin_menu', [$this, 'project_admin_menu']);
 
     // Assets
     add_action('wp_enqueue_scripts', [$this, 'load_assets']);
