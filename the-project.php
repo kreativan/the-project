@@ -54,6 +54,9 @@ new The_Project([
   // Project Title
   "title" => the_project('name'),
 
+  // gutenberg
+  "gutenberg" => 'false',
+
   // admin menu
   "menu" => "true",
 

@@ -9,6 +9,7 @@ class The_Project {
 
   public function __construct($data) {
 
+    $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == "true" ? true : false;
     $this->menu = !empty($data["menu"]) && $data["menu"] == "false" ? false : true; 
     $this->title = !empty($data["title"]) ? $data["title"] : ''; 
     $this->icon = !empty($data["icon"]) ? $data["icon"] : 'dashicons-superhero'; 
@@ -94,10 +95,12 @@ class The_Project {
   public function load_assets() {
 
     // reset
-    wp_dequeue_style( 'wp-block-library' ); // Wordpress core
-    wp_dequeue_style( 'wp-block-library-theme' ); // Wordpress core
-    wp_dequeue_style( 'wc-block-style' ); // WooCommerce
-    wp_dequeue_style( 'storefront-gutenberg-blocks' ); // Storefront theme
+    if(!$this->gutenberg) {
+      wp_dequeue_style( 'wp-block-library' ); // Wordpress core
+      wp_dequeue_style( 'wp-block-library-theme' ); // Wordpress core
+      wp_dequeue_style( 'wc-block-style' ); // WooCommerce
+      wp_dequeue_style( 'storefront-gutenberg-blocks' ); // Storefront theme
+    }
 
     // JS
     if($this->js) {
