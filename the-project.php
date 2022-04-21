@@ -161,6 +161,7 @@ $katalog = [
   "menu_position" => 2,
   "menu_icon" => "dashicons-archive",
   "has_archive" => "true",
+  "taxonomy" => "true",
   "posts_per_page" => $katalog_per_page,
   "category_name" => "katalog_category",
   "rewrite" => "katalog/%katalog_category%",

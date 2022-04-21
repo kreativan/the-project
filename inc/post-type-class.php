@@ -11,6 +11,7 @@ class The_Project_Post_Type {
   public function __construct($data = []) {
 
     $has_archive = !empty($data["has_archive"]) && $data["has_archive"] == "false" ? false : true;
+    $taxonomy = !empty($data["taxonomy"]) && $data["taxonomy"] == "false" ? false : true;
     $rewrite_func = !empty($data["rewrite_func"]) && $data["rewrite_func"] == 'true' ? true : false;
 
     // posts
@@ -26,6 +27,7 @@ class The_Project_Post_Type {
     $this->menu_icon = !empty($data['menu_icon']) ? $data['menu_icon'] : "dashicons-archive";
     $this->supports = !empty($data['supports']) ? $data['supports'] : ['title', 'editor', 'thumbnail'];
     $this->has_archive = $has_archive;
+    $this->taxonomy = $taxonomy;
     $this->posts_per_page = !empty($data['posts_per_page']) ? $data['posts_per_page'] : 12;
     $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == 'false' ? false : true;
 
@@ -43,7 +45,7 @@ class The_Project_Post_Type {
     add_action('init', [$this, 'post_type']);
 
     // if there is categories
-    if($has_archive) {
+    if($this->taxonomy) {
       add_action('init', [$this, 'taxonomy']);
       add_action('pre_get_posts', [$this, 'posts_per_page']);
       if($rewrite_func) add_filter('post_type_link', [$this, 'rewrite_func'], 1, 2);
