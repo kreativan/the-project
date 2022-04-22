@@ -7,15 +7,15 @@
  *  Author URI: http://kreativan.dev/
  */
 
-// includes
-include_once("inc/the-project-class.php");
-include_once("inc/project-menu-class.php");
-include_once("inc/settings-class.php"); 
-include_once("inc/settings-field-class.php"); 
-include_once("inc/post-type-class.php");
-include_once("inc/less-compiler.php");
-include_once("functions.php");
+// Classes
+include_once("classes/less-compiler.php"); 
+include_once("classes/project.php");
+include_once("classes/post-type.php");
+include_once("classes/submenu.php");
+include_once("classes/settings.php");
 
+// includes
+include_once("functions.php");
 
 /**
  *  The Project Data
@@ -53,7 +53,7 @@ new The_Project([
 
   // Project Title
   "title" => the_project('name'),
-
+  
   // gutenberg
   "gutenberg" => 'false',
 
@@ -62,6 +62,13 @@ new The_Project([
 
   // Admin menu icon
   "icon" => 'dashicons-superhero',
+
+  /**
+   *  ACF Options Page - Website Settings
+   *  Menu Title or false (string)
+   *  Need to create ACF Options field group and asign it to the Options Page
+   */
+  'acf_options' => 'Site Settings',
 
   /**
    *  Enable ajax route on front end?
@@ -111,45 +118,24 @@ new The_Project([
 
 ]);
 
-//-------------------------------------------------------- 
-//  Settings
-//-------------------------------------------------------- 
+//  Init Project Settings (Developer Settings)
+// ===========================================================
 
-// Init Project Settings (Developer Settings)
 new The_Project_Settings;
 
-// ASF Options Page
-if(function_exists('acf_add_options_page')) {
 
-  acf_add_options_page([
-    'page_title' => 'Website Settings',
-    'menu_title' => 'Website Settings',
-    'menu_slug' => 'website-settings', 
-    'capability' => 'edit_posts',
-    'parent_slug' => 'project',
-  ]);
+//  Project Submenu
+// ===========================================================
 
-}
-
-
-//-------------------------------------------------------- 
-//  Menus
-//-------------------------------------------------------- 
-
-new The_Project_Menu([
-  "title" => "Hero",
-  "slug" => "edit.php?post_type=hero"
-]);
-
-new The_Project_Menu([
+new The_Project_Sub_Menu([
   "title" => "Submenu",
   "slug" => "project-submenu",
   "view" => "submenu",
 ]);
 
-//-------------------------------------------------------- 
-//  Post Types
-//-------------------------------------------------------- 
+
+//  Katalog Post Type Example
+// ===========================================================
 
 $katalog_per_page = get_field("katalog_per_page", "options");
 
@@ -172,6 +158,9 @@ $katalog = [
 new The_Project_Post_Type($katalog);
 
 
+//  Single post type example 
+// ===========================================================
+
 $hero = [
   "name" => "hero",
   "title" => "Hero",
@@ -189,3 +178,9 @@ $hero = [
 ];
 
 new The_Project_Post_Type($hero);
+
+// Hero projecy submenu
+new The_Project_Sub_Menu([
+  "title" => "Hero",
+  "slug" => "edit.php?post_type=hero"
+]);

@@ -9,7 +9,7 @@ class The_Project {
 
   public function __construct($data) {
 
-    $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == "true" ? true : false;
+    $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == "true" ? true : false; 
     $this->menu = !empty($data["menu"]) && $data["menu"] == "false" ? false : true; 
     $this->title = !empty($data["title"]) ? $data["title"] : ''; 
     $this->icon = !empty($data["icon"]) ? $data["icon"] : 'dashicons-superhero'; 
@@ -19,6 +19,7 @@ class The_Project {
     $this->js = (!empty($data["js"]) && count($data["js"]) > 0) ? $data["js"] : false;
     $this->css = (!empty($data["css"]) && count($data["css"]) > 0) ? $data["css"] : false;
     $this->assets_suffix = !empty($data["assets_suffix"]) ? $data["assets_suffix"] : false;
+    $this->acf_options = !empty($data['acf_options']) && $data['acf_options'] != "false" ? $data['acf_options'] : false;
     
 
     //
@@ -52,6 +53,9 @@ class The_Project {
 
     // Admin menu
     if($this->menu) add_action('admin_menu', [$this, 'project_admin_menu']);
+
+    // ACF Options
+    if($this->acf_options) $this->acf_website_settings($this->acf_options);
 
     // Assets
     add_action('wp_enqueue_scripts', [$this, 'load_assets']);
@@ -87,6 +91,21 @@ class The_Project {
   public function project_render_view() {
     $view_file = __DIR__ . "/../views/main.php";
     if(file_exists($view_file)) include($view_file);
+  }
+
+  /**
+   *  Website Settings
+   */
+  public function acf_website_settings($title = 'Website Settings') {
+    if(function_exists('acf_add_options_page')) {
+      acf_add_options_page([
+        'page_title' => $title,
+        'menu_title' => $title,
+        'menu_slug' => 'website-settings', 
+        'capability' => 'edit_posts',
+        'parent_slug' => 'project',
+      ]);
+    }
   }
 
   /**

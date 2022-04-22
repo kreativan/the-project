@@ -15,6 +15,12 @@ class The_Project_Func {
     return "Hello";
   }
 
+  // render file and pass the data
+  public function render($file_name, $vars = '') {
+    foreach($vars as $key => $value) $$key = $value;
+    include($file_name);
+  }
+
   /**
    *  Get Menu items
    *  @param string $name

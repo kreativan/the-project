@@ -5,7 +5,7 @@
  *  @link http://kraetivan.dev
  */
 
-class The_Project_Menu {
+class The_Project_Sub_Menu {
 
   public function __construct($data) {
 
