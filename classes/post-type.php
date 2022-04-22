@@ -51,6 +51,14 @@ class The_Project_Post_Type {
       if($rewrite_func) add_filter('post_type_link', [$this, 'rewrite_func'], 1, 2);
     }
 
+    // Admin Columns
+    $admin_columns = !empty($data['admin_columns']) && count($data['admin_columns']) > 0 ? $data['admin_columns'] : false;
+    $this->admin_columns = $admin_columns;
+
+    if($admin_columns) {
+      $this->add_admin_column();
+    }
+
   }
 
 
@@ -128,6 +136,45 @@ class The_Project_Post_Type {
     }
     return $post_link;
   }
+
+
+  /**
+   *  Admin Columns
+   *  On post edit page
+   */
+
+  // add columns
+  public function add_admin_column() {
+
+    // Column Header
+    add_filter( 'manage_' . $this->name . '_posts_columns', function($columns) {
+      foreach($this->admin_columns as $key => $val) {
+        $columns[$key] = $val;
+      }
+      return $columns;
+    });
+
+    // Column Content
+    
+    add_action( 'manage_' . $this->name . '_posts_custom_column' , function($column, $post_id) {
+      foreach($this->admin_columns as $key => $val) {
+        if ($key === $column) $this->add_admin_column_cb($post_id, $key);
+      }
+    }, 10, 2 );
+
+  }
+
+  public function add_admin_column_cb($post_id, $field_name) {
+    $meta = get_post_meta( $post_id , $field_name , true );
+    $out = "";
+    if(is_array($meta)) {
+      foreach($meta as $part) $out .= "$part<br />";
+      echo $out;
+    } else {
+      echo $meta;
+    }
+  }
+
 
 
 }

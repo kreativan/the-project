@@ -3,12 +3,25 @@
   padding-right: 20px;
 }
 
+#wpbody h2 {
+  font-size:1.3rem;
+}
+
 /*  Utility
 =========================================================== */
  
 .margin {
   margin: 20px 0;
 }
+
+.margin-top {
+  margin-top: 20px;
+}
+
+.margin-bottom {
+  margin-bottom: 20px;
+}
+
 
 .margin-remove {
   margin: 0 !important;
@@ -37,7 +50,7 @@
 .grid.grid-2 {grid-template-columns: 1fr 1fr;}
 .grid.grid-1 {grid-template-columns: 1fr;}
 
-@media(max-width: 960px) {
+@media(max-width: 1400px) {
   .grid {
     grid-template-columns: 1fr !important;
   }
@@ -106,6 +119,10 @@ table tr:nth-child(even) td {
   background: white;
   border-radius: 3px;
   overflow: hidden;
+}
+.panel-title {
+  margin: 10px;
+  font-size: 1rem;
 }
 
 </style>

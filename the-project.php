@@ -152,7 +152,12 @@ $katalog = [
   "category_name" => "katalog_category",
   "rewrite" => "katalog/%katalog_category%",
   "rewrite_func" => "true",
-  "gutenberg" => "false"
+  "gutenberg" => "false",
+  "admin_columns" => [
+    'ganre' => 'Ganre',
+    'year' => 'Realise Year',
+    'maker' => "Studio",
+  ]
 ];
 
 new The_Project_Post_Type($katalog);

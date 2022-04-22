@@ -41,9 +41,13 @@
       for (const item in data) formData.append(item, data[item]);
     }
     fields.forEach((e) => {
+      let type = e.getAttribute('type');
       let name = e.getAttribute("name");
-      let value = e.value;
-      formData.append(name, value);
+      if(type === 'file') {
+        formData.append(name, e.files[0]);
+      } else {
+        formData.append(name, e.value);
+      }
     });
     return formData;
   }
