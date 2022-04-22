@@ -47,13 +47,23 @@ new The_Project([
 
   // Project Title
   "title" => the_project('name'),
+  
+  // gutenberg
+  "gutenberg" => 'false',
 
-  // Admin menu
+  // admin menu
   "menu" => "true",
 
   // Admin menu icon
   "icon" => 'dashicons-superhero',
- 
+
+  /**
+   *  ACF Options Page - Website Settings
+   *  Menu Title or false (string)
+   *  Need to create ACF Options field group and asign it to the Options Page
+   */
+  'acf_options' => 'Site Settings',
+
   /**
    *  Enable ajax route on front end?
    *  http request on /ajax/my-file/
@@ -130,14 +140,9 @@ new The_Project_Settings_Field($my_custom_dev_setting);
 ```
 
 ### Admin Menus
-Use The_Project_Menu` class to add admin submenus
+Use The_Project_Menu` class to add admin submenus.
 ```
-new The_Project_Menu([
-  "title" => "Hero",
-  "slug" => "edit.php?post_type=hero"
-]);
-
-new The_Project_Menu([
+new The_Project_Sub_Menu([
   "title" => "Submenu",
   "slug" => "project-submenu",
   "view" => "submenu",
@@ -182,6 +187,12 @@ $hero = [
 ];
 
 new The_Project_Post_Type($hero);
+
+// create hero submenu
+new The_Project_Sub_Menu([
+  "title" => "Hero",
+  "slug" => "edit.php?post_type=hero"
+]);
 ```
 
 ## Less Compiler
