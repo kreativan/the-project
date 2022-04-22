@@ -155,12 +155,17 @@ class The_Project_Post_Type {
     });
 
     // Column Content
-    
     add_action( 'manage_' . $this->name . '_posts_custom_column' , function($column, $post_id) {
       foreach($this->admin_columns as $key => $val) {
         if ($key === $column) $this->add_admin_column_cb($post_id, $key);
       }
     }, 10, 2 );
+
+    // Column sort
+    add_filter( "manage_edit-{$this->name}_sortable_columns", function ($columns) {
+      foreach($this->admin_columns as $key => $val) $columns[$key] = $key;
+      return $columns;
+    });
 
   }
 
