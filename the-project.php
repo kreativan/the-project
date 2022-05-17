@@ -133,6 +133,30 @@ new The_Project_Sub_Menu([
   "view" => "submenu",
 ]);
 
+//  Forms
+// ===========================================================
+
+$forms = [
+  "name" => "project-forms",
+  "title" => 'Forms',
+  "item_title" => 'Form',
+  "show_in_menu" => "false",
+  "menu_position" => 1,
+  "menu_icon" => 'dashicons-feedback',
+  "hierarchical" => "true", // true=pages, false=posts
+  "exclude_from_search" => "true",
+  "supports" => ['title'],
+  "has_archive" => "false",
+  "taxonomy" => "false",
+];
+
+new The_Project_Post_Type($forms);
+
+new The_Project_Sub_Menu([
+  "title" => __('Forms'),
+  "slug" => "edit.php?post_type=project-forms"
+]);
+
 
 //  Katalog Post Type Example
 // ===========================================================
@@ -162,30 +186,37 @@ $katalog = [
 
 new The_Project_Post_Type($katalog);
 
-
-//  Single post type example 
+//  Documentation
 // ===========================================================
-
-$hero = [
-  "name" => "hero",
-  "title" => "Hero",
-  "item_title" => "Hero item",
+$docs = [
+  "name" => "docs",
+  "slug" => 'documentation',
+  "title" => __('Documentation'),
+  "item_title" => __('Documentation Page'),
   "show_in_menu" => "false",
   "menu_position" => 1,
-  "menu_icon" => 'dashicons-slides',
+  "menu_icon" => 'dashicons-text',
   "hierarchical" => "true", // true=pages, false=posts
-  "exclude_from_search" => "true",
-  "supports" => ['title', 'editor', 'thumbnail'],
-  "has_archive" => "false",
-  "rewrite" => "false",
-  "rewrite_func" => "false",
-  "gutenberg" => "false"
+  "exclude_from_search" => "false",
+  "supports" => ['title', 'editor'],
+  "has_archive" => "true",
+  "taxonomy" => "false",
+  "rewrite" => "documentation",
+  //"rewrite_func" => "false",
 ];
 
-new The_Project_Post_Type($hero);
+new The_Project_Post_Type($docs);
 
-// Hero projecy submenu
 new The_Project_Sub_Menu([
-  "title" => "Hero",
-  "slug" => "edit.php?post_type=hero"
+  "title" => __('Documentation'),
+  "slug" => "edit.php?post_type=docs"
+]);
+
+//  Translate
+// ===========================================================
+
+new The_Project_Sub_Menu([
+  "title" => "Translate",
+  "slug" => "project-translate",
+  "view" => "translate",
 ]);

@@ -211,20 +211,10 @@ $lessCompiler = new Less_Compiler($output_dir);
 <link rel="stylesheet" type="text/css" href="<?= $lessCompiler->less($less_files, $less_vars, "main", $dev_mode); ?>">
 ```
 
-## Project Functions
-Use project functions and methods.
-```
-$project = new The_Project_Func;
-
-// Hello
-echo $project->hello;
-```
-
 ### Valitron
 Use built-in valitron library to validate your forms.
 ```
-$project = new The_Project_Func;
-$v = $project->valitron($_POST);
+$v = the_project_valitron($_POST);
 $v = $v->rule('email', 'email');
 if ( !$v->validate() ) {
   print_r( $v->errors() )
@@ -234,10 +224,8 @@ if ( !$v->validate() ) {
 ### Menu items
 Get menu items as array.
 ```
-$project = new The_Project_Func;
-
 // pass the menu name as argument
-$navbar = $project->menu_items('navbar');
+$navbar = the_project_menu('navbar');
 
 foreach($navbar as $item) {
   print_r($item);
