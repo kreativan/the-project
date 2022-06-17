@@ -20,32 +20,8 @@ class The_Project {
     $this->css = (!empty($data["css"]) && count($data["css"]) > 0) ? $data["css"] : false;
     $this->assets_suffix = !empty($data["assets_suffix"]) ? $data["assets_suffix"] : false;
     $this->acf_options = !empty($data['acf_options']) && $data['acf_options'] != "false" ? $data['acf_options'] : false;
-    
-
-    //
-    // SMTP
-    //
-
-    $options = get_option('project_settings');
-    $is_SMTP = $options['smtp_enable'] == "1" ? true : false;
-
-    if($is_SMTP) {
-      
-      $SMTP = $data["SMTP"];
-
-      $smtp_options = [
-        "from_email" => !empty($SMTP['from_email']) ? $SMTP['from_email'] : '',
-        "from_name" => !empty($SMTP['from_name']) ? $SMTP['from_name'] : '',
-        "host" => !empty($SMTP['host']) ? $SMTP['host'] : '',
-        "port" => !empty($SMTP['port']) ? $SMTP['host'] : 587,
-        "secure" => !empty($SMTP['secure']) ? $SMTP['secure'] : 'tls',
-        "username" => !empty($SMTP['username']) ? $SMTP['username'] : '',
-        "password" => !empty($SMTP['password']) ? $SMTP['password'] : '',
-      ];
-      
-      $this->SMTP = $is_SMTP ? $smtp_options : false;
-
-    }
+    $this->woocommerce = !empty($data["woocommerce"]) && $data["woocommerce"] == "true" ? true : false; 
+    $this->woocommerce_styles = !empty($data["woocommerce_styles"]) && $data["woocommerce_styles"] == "true" ? true : false; 
 
     //
     //  Actions
@@ -60,14 +36,13 @@ class The_Project {
     // Assets
     add_action('wp_enqueue_scripts', [$this, 'load_assets']);
 
-    // SMTP
-    if($is_SMTP) add_action('phpmailer_init', [$this, 'project_SMTP']);
-
     // Ajax 
     if($this->ajax) add_action('template_redirect', [$this, 'ajax_route']);
 
-    // HTMX
-    if($this->htmx) add_action('template_redirect', [$this, 'htmx_route']);
+    // WooCommerce
+    if($this->woocommerce && !$this->woocommerce_styles) {
+      add_filter( 'woocommerce_enqueue_styles', '__return_false' );
+    }
 
   }
 
@@ -139,24 +114,16 @@ class The_Project {
 
     // HTMX
     if($this->htmx) {
-      wp_register_script('htmx', plugin_dir_url(__FILE__) . "../js/htmx.min.js", [], $this->htmx_version, true);
+      wp_register_script('htmx', plugin_dir_url(__FILE__) . "../assets/htmx.min.js", [], $this->htmx_version, true);
       wp_enqueue_script('htmx');
     }
 
-  }
+    // woocommerce
+    if($this->woocommerce && !$this->woocommerce_styles) {
+      wp_dequeue_style( 'wc-blocks-vendors-style' ); 
+      wp_dequeue_style( 'wc-blocks-style' );
+    }
 
-  /**
-   *  Use SMTP to send emails
-   */
-  public function project_SMTP(PHPMailer $phpmailer) {
-    $phpmailer->SetFrom($this->SMTP['from_email'], $this->SMTP['from_name']);
-    $phpmailer->Host = $this->SMTP['host'];
-    $phpmailer->Port = $this->SMTP['port'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->SMTPSecure = $this->SMTP['secure'];
-    $phpmailer->Username = $this->SMTP['username'];
-    $phpmailer->Password = $this->SMTP['password'];
-    $phpmailer->IsSMTP();
   }
 
   /**
@@ -170,6 +137,9 @@ class The_Project {
       $wp_query->is_404 = false;
       status_header(200);
       $file =  get_template_directory() . "/ajax/{$url[2]}.php";
+      if(!empty($url[3]) && (substr($url[3], 0, 1) != "?")) {
+        $file =  get_template_directory() . "/ajax/{$url[2]}/$url[3].php";
+      }
       if(file_exists($file)) {
         include($file);
       } else {
@@ -182,23 +152,5 @@ class The_Project {
       }
     }
   }
-
-  /**
-   *  HTMX Route
-   *  @example http request to: /htmx/test/ will execute /htmx/test.php
-   */
-  public function htmx_route() {
-    $url = explode("/", $_SERVER['REQUEST_URI']);
-    if ($url[1] == 'htmx') {
-      $file =  get_template_directory() . "/htmx/{$url[2]}.php";
-      if(file_exists($file)) {
-        global $wp_query;
-        $wp_query->is_404 = false;
-        status_header(200);
-        include($file);
-      }
-    }
-  }
-
 
 }

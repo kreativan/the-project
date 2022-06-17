@@ -67,6 +67,22 @@ class The_Project_Settings {
     );
 
     add_settings_field(
+      'woo', // id
+      'WooCommerce', // title 
+      [$this, 'render_woo'], // callback func
+      'project-settings', // slug-name of the settings page
+      'dev_options' // section
+    );
+
+    add_settings_field(
+      'project_js', // id
+      'Load project.js', // title 
+      [$this, 'render_project_js'], // callback func
+      'project-settings', // slug-name of the settings page
+      'dev_options' // section
+    );
+
+    add_settings_field(
       'ajax', // id
       'Ajax', // title 
       [$this, 'render_ajax'], // callback func
@@ -198,6 +214,46 @@ class The_Project_Settings {
         </label>
       </fieldset>
     ";
+    echo $input;
+  }
+
+  public function render_woo() {
+    $options = get_option('project_settings');
+    $name = "woo";
+    $value = isset($options[$name]) ? $options[$name] : "1";
+    $checked_1 = ($value == "1") ? "checked" : "";
+    $checked_2 = ($value == "2") ? "checked" : "";
+    $input = "
+      <fieldset>
+        <label>
+          <input type='radio' name='project_settings[$name]' value='1' $checked_1 />
+          Enabled
+        </label>
+        <label>
+          <input type='radio' name='project_settings[$name]' value='2' $checked_2 />
+          Disabled
+        </label>
+      </fieldset>
+    ";
+    echo $input;
+  }
+
+  public function render_project_js() {
+    $name = "project_js";
+    $options_arr = ["Yes" => "1", "No" => "2"];
+    $options = get_option('project_settings');
+    $value = isset($options[$name]) ? $options[$name] : "true";
+    $input = "<fieldset>";
+    foreach($options_arr as $key => $val) {
+      $checked = ($value == $val) ? "checked" : "";
+      $input .= "
+        <label>
+          <input type='radio' name='project_settings[$name]' value='$val' $checked />
+          $key
+        </label>
+      ";
+    }
+    $input .= "</fieldset>";
     echo $input;
   }
 

@@ -1,9 +1,7 @@
-<?php include(__DIR__."/../style.php"); ?>
-
 <h1><?= the_project("title") ?></h1>
 
-<div class="panel">
-  <table>
+<div class="the-project-panel padding">
+  <table class="the-project-table the-project-table-striped">
     <tbody>
       <?php foreach(the_project() as $key => $value) :?>
       <tr>

@@ -3,21 +3,43 @@ function dump($var) {
   echo '<pre>',print_r($var,1),'</pre>';
 }
 
-// Init Translations
-// load_theme_textdomain('default', get_template_directory());
-
-//
-// Options
-//
-
-add_theme_support('title-tag');
-add_theme_support('menus');
-add_theme_support('post-thumbnails');
-add_theme_support('widgets');
-
 /* =========================================================== 
   language
 =========================================================== */
+
+function lng($str = "") {
+
+  $key = lng_key($str);
+
+  $lang = get_option('WPLANG');
+  $lang = explode("_", $lang);
+  $lang = $lang[0];
+  $lang = !empty($lang) ? $lang : 'en';
+
+  $default_file = get_template_directory() . "/assets/language/default.json";
+  $default_json = file_get_contents($default_file);
+  $default = json_decode($default_json, true);
+
+  if(!isset($default[$key])) lng_update($str);
+
+  $translation_file = get_template_directory() . "/assets/language/$lang.json";
+  if(file_exists($translation_file)) {
+    $translation_json = file_get_contents($translation_file);
+    $translation = json_decode($translation_json, true);
+    if(isset($translation[$key])) return $translation[$key];
+  }
+
+  return isset($default[$key]) ? $default[$key] : $str;
+}
+
+function lng_update($str) {
+  $key = lng_key($str);
+  $file = get_template_directory() . "/assets/language/default.json";
+  $json = file_get_contents($file);
+  $array = json_decode($json, true);
+  $array[$key] = $str;
+  file_put_contents($file, json_encode($array));
+}
 
 function lng_key($str) {
   $key = strtolower($str);
@@ -27,40 +49,6 @@ function lng_key($str) {
   $key = str_replace('"', "", $key);
   $key = str_replace("%s", "__s__", $key);
   return $key;
-}
-
-function lng($str = "") {
-
-  $key = lng_key($str);
-
-  $lang = get_settings('WPLANG');
-  $lang = explode("_", $lang);
-  $lang = $lang[0];
-  $lang = !empty($lang) ? $lang : 'en';
-
-  $default_file = get_template_directory() . "/language/default.json";
-  $default_json = file_get_contents($default_file);
-  $default = json_decode($default_json, true);
-
-  if(!isset($default[$key])) lng_update($str);
-
-  $translation_file = get_template_directory() . "/language/$lang.json";
-  if(file_exists($translation_file)) {
-    $translation_json = file_get_contents($translation_file);
-    $translation = json_decode($translation_json, true);
-    if(isset($translation[$key])) return $translation[$key];
-  }
-
-  return isset($default[$key]) ? $default[$key] : false;
-}
-
-function lng_update($str) {
-  $key = lng_key($str);
-  $file = get_template_directory() . "/language/default.json";
-  $json = file_get_contents($file);
-  $array = json_decode($json, true);
-  $array[$key] = $str;
-  file_put_contents($file, json_encode($array));
 }
 
 /* =========================================================== 
@@ -93,16 +81,76 @@ function the_project_menu($name) {
 }
 
 /* =========================================================== 
-    Media
+  Media
 =========================================================== */
 
 /**
- *  Render SVG from /assets/svg/ folder
- *  @param string $svg_file_nam
+ *  Render Picture
+ *  @param object $image
+ *  @example $source = ["max-width: 600px" => $image['sizes']['600'];
+ */
+function picture($image, $args = []) {
+
+  if(empty($image)) return;
+
+  $size = !empty($args['size']) ? $args['size'] : false;
+  $alt = !empty($args['alt']) ? $args['alt'] : $image['alt'];
+  $lazy = !empty($args["lazy"]) && $args["lazy"] == "false" ? false : true;
+  $webp = !empty($args["webp"]) && $args["webp"] == "true" ? true : false;
+  $class = !empty($args["class"]) ? $args["class"] : false;
+  $img_class = !empty($args["img_class"]) ? $args["img_class"] : false;
+  $img_attr = !empty($args["img_attr"]) ? $args["img_attr"] : false;
+  $source = !empty($args["source"]) ? $args["source"] : [];
+
+  if($size) {
+    $size_width = "{$size}-width";
+    $size_height = "{$size}-height";
+    $width = !empty($args['width']) ? $args['width'] : $image['sizes'][$size_width];
+    $height = !empty($args['height']) ? $args['height'] : $image['sizes'][$size_height];
+  } else {
+    $width = !empty($args['width']) ? $args['width'] : $image['width'];
+    $height = !empty($args['height']) ? $args['height'] : $image['height'];
+  }
+
+  $img = $size ? $image['sizes']["$size"] : $image['url'];
+  
+  $attr = "";
+  $cls = $class ? "class='$class'" : "";
+  $img_cls = $img_class ? "class='$img_class'" : "";
+
+  // lazy load or not
+  $attr .= $lazy ? "loading='lazy'" : "";
+
+  // img_attr
+  $attr .= $img_attr ? " $img_attr" : "";
+
+  // Start <picture> html
+  $html = "<picture $cls>";
+
+  // add additional sources if exists
+  if(count($source)) {
+    foreach($source as $media => $srcset) {
+      $html .= "<source media='($media)' srcset='$srcset' />";
+    }
+  }
+
+  if($webp) $html .= "<source srcset='($webp}' type='image/webp'>";
+
+  $html .= "<img src='{$img}' alt='$alt' width='$width' height='$height' $img_cls $attr />";
+
+  //end picture tag
+  $html .= "</picture>";
+
+  echo $html;
+}
+
+/**
+ *  Render SVG
+ *  @param string $svg_file - svg file path relative to the theme folder
  *  @param array $options
  *  @return markup
  */
-function the_project_svg($svg_file, $options = []) {
+function svg($svg_file, $options = []) {
   $svg_file = get_template_directory() . "{$svg_file}.svg";
   if(!file_exists($svg_file)) return false;
 
@@ -126,6 +174,7 @@ function the_project_svg($svg_file, $options = []) {
 
 /**
  *  Get Youtube embed url from regular url
+ *  @param $url - regular youtube url
  */
 function the_project_youtube($url) {
   $shortUrlRegex = '/youtu.be\/([a-zA-Z0-9_-]+)\??/i';
@@ -139,22 +188,6 @@ function the_project_youtube($url) {
   return 'https://www.youtube.com/embed/' . $youtube_id ;
 }
 
-// Get media by slug
-function the_project_media($slug) {
-
-  $args = array(
-    'post_type' => 'attachment',
-    'name' => sanitize_title($slug),
-    'posts_per_page' => 1,
-    'post_status' => 'inherit',
-  );
-  $_header = get_posts( $args );
-  $header = $_header ? array_pop($_header) : null;
-  return $header ? wp_get_attachment_url($header->ID) : '';
-
-}
-
-
 /* =========================================================== 
   Utility
 =========================================================== */
@@ -164,7 +197,6 @@ function the_project_render($file_name, $vars = '') {
   foreach($vars as $key => $value) $$key = $value;
   include($file_name);
 }
-
 
 /**
  *  Validate Data/Form with Valitron
@@ -192,4 +224,13 @@ function the_project_str($string, $data = []) {
     $string = str_replace("{".$key."}", $replace, $string);
   }
   return $string;
+}
+
+/**
+ *  Convert Text to Markdown
+ */
+function markdown($text) {
+  if(!class_exists('Parsedown')) require_once(__DIR__."/../parsedown/Parsedown.php");
+  $Parsedown = new Parsedown();
+  echo $Parsedown->text($text);
 }

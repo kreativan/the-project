@@ -7,7 +7,7 @@
  *  @method ajaxReq - send fetch request to provided /ajax/* url
  *  @method mobileMenu - init mobile menu offcanvas
  */
- var project = (function () {
+ var the_project = (function () {
 
 	'use strict';
 
@@ -144,7 +144,7 @@
         message: response.notification,
         status: response.status ? response.status : 'primary',
         pos: 'top-center',
-        timeout: 3000
+        timeout: 2000
       });
     } else if (response.redirect) {
       window.location.href = response.redirect;
@@ -197,7 +197,39 @@
     }
   }
 
+  /* =========================================================== 
+    Cookies
+  =========================================================== */
+
+  methods.setCookie = function(name,value,days){
+    if(days){
+      var d=new Date();
+      d.setTime(d.getTime()+(days*24*60*60*1000));
+      var expires = "; expires="+d.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+    // console.log("cookie is set to" + d);
+  }
+
+  methods.getCookie = function(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
 	// Expose the public methods
 	return methods;
+
 
 })();

@@ -2,21 +2,20 @@
 $this_language = isset($_GET['lng']) ? $_GET['lng'] : 'en';
 
 $languages = [
-  'en' => 'English',
-  //'fr' => 'French',
+  'en' => 'Default',
 ];
 
 
 function lng_def($str = "") {
-  $file = get_template_directory() . "/language/default.json";
+  $file = get_template_directory() . "/assets/language/default.json";
   $json = file_get_contents($file);
   $arr = json_decode($json, true);
-  ksort($arr);
+  if($arr && count($arr) > 0) ksort($arr);
   return $str != "" ? $arr[$str] : $arr;
 }
 
 function lng_current($str, $lang) {
-  $file = get_template_directory() . "/language/$lang.json";
+  $file = get_template_directory() . "/assets/language/$lang.json";
   if (!file_exists($file)) return lng_def($str);
   $json = file_get_contents($file);
   $arr = json_decode($json, true);
@@ -26,7 +25,7 @@ function lng_current($str, $lang) {
 
 if($_POST && $_POST['submit_translation']) {
   $lang = $_POST['lang'];
-  $file = get_template_directory() . "/language/$lang.json";
+  $file = get_template_directory() . "/assets/language/$lang.json";
   file_put_contents($file, json_encode($_POST));
 }
 
@@ -46,16 +45,18 @@ if($_POST && $_POST['submit_translation']) {
 
   <input type="hidden" name="lang" value="<?= $this_language ?>" />
 
+  <?php if(lng_def()) : ?>
   <?php foreach(lng_def() as $key => $value) : ?>
-  <?php if($key != "lang" && $key != "submit_translation") : ?>
-    <div style="margin: 20px 0px;">
-      <label style="display: block;margin-bottom: 5px;"><?= lng_def($key) ?></label>
-      <input style="width: 90%" type="text" name="<?= $key ?>" value="<?= lng_current($key, $this_language) ?>" />
-    </div>
-  <?php endif;?>
+    <?php if($key != "lang" && $key != "submit_translation") : ?>
+      <div style="margin: 20px 0px;">
+        <label style="display: block;margin-bottom: 5px;"><?= lng_def($key) ?></label>
+        <input style="width: 90%" type="text" name="<?= $key ?>" value="<?= lng_current($key, $this_language) ?>" />
+      </div>
+    <?php endif;?>
   <?php endforeach;?>
+  <?php endif; ?>
 
-  <input type="submit" name="submit_translation" value="Save Translateions" />
+  <input class="margin" type="submit" name="submit_translation" value="Save Translateions" />
 
 </form>
 

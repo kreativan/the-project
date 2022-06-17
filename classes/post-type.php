@@ -1,5 +1,5 @@
 <?php
-/**
+/**Нели Ботеваneli Boteva
  *  Create Post Type Class
  *  @author Ivan Milincic <kreativan.dev@gmail.com>
  *  @link http://kraetivan.dev
@@ -9,10 +9,6 @@ class The_Project_Post_Type {
 
 
   public function __construct($data = []) {
-
-    $has_archive = !empty($data["has_archive"]) && $data["has_archive"] == "false" ? false : true;
-    $taxonomy = !empty($data["taxonomy"]) && $data["taxonomy"] == "false" ? false : true;
-    $rewrite_func = !empty($data["rewrite_func"]) && $data["rewrite_func"] == 'true' ? true : false;
 
     // posts
     $this->name = $data['name']; // my_type
@@ -26,29 +22,29 @@ class The_Project_Post_Type {
     $this->hierarchical = !empty($data['hierarchical']) && $data['hierarchical'] == false ? false : true;
     $this->menu_icon = !empty($data['menu_icon']) ? $data['menu_icon'] : "dashicons-archive";
     $this->supports = !empty($data['supports']) ? $data['supports'] : ['title', 'editor', 'thumbnail'];
-    $this->has_archive = $has_archive;
-    $this->taxonomy = $taxonomy;
+    $this->has_archive = !empty($data["has_archive"]) && $data["has_archive"] == "false" ? false : true;
+    $this->taxonomy = !empty($data["taxonomy"]) && $data["taxonomy"] == "false" ? false : true;
     $this->posts_per_page = !empty($data['posts_per_page']) ? $data['posts_per_page'] : 12;
     $this->gutenberg = !empty($data["gutenberg"]) && $data["gutenberg"] == 'false' ? false : true;
 
-    // Rewrite URL
-    // POST_TYPE_SLUG/%TAXONOMY_NAME%
-    // "my-type/%my_category%";
-    $this->rewrite = !empty($data["rewrite"]) ? $data['rewrite'] : false;
-    
-    // category
-    $this->category_name = !empty($data["category_name"]) ? $data["category_name"] : "project_category"; // my_category
-    $this->category_title = !empty($data["category_title"]) ? $data["category_title"] : "Categories"; // Categories
-    $this->category_items =  !empty($data["category_items"]) ? $data["category_items"] : "Category"; // Category
+    // Taxonomy
+    $this->taxonomy_title = !empty($data["taxonomy_title"]) ? $data["taxonomy_title"] : "";
+    $this->taxonomy_name = !empty($data["taxonomy_name"]) ? $data["taxonomy_name"] : "";
+    $this->taxonomy_singular = !empty($data["taxonomy_singular"]) ? $data["taxonomy_singular"] : "";
+    $this->taxonomy_admin_column = !empty($data["taxonomy_admin_column"]) && $data["taxonomy_admin_column"] == "false" ? false : true;
+    $this->taxonomy_slug = !empty($data["taxonomy_slug"]) ? $data["taxonomy_slug"] : "";
 
     // actions
     add_action('init', [$this, 'post_type']);
 
-    // if there is categories
+    // Taxonomy Init
     if($this->taxonomy) {
       add_action('init', [$this, 'taxonomy']);
       add_action('pre_get_posts', [$this, 'posts_per_page']);
-      if($rewrite_func) add_filter('post_type_link', [$this, 'rewrite_func'], 1, 2);
+      // run rewrite method if taxonomy slug is missing
+      if(!$this->taxonomy_slug) {
+        add_filter('post_type_link', [$this, 'rewrite_func'], 1, 2);
+      }
     }
 
     // Admin Columns
@@ -83,9 +79,16 @@ class The_Project_Post_Type {
       "show_in_rest" => $this->gutenberg,
     ];
 
-    // POST_TYPE_SLUG/%TAXONOMY_NAME%
-    if($this->rewrite) {
-      $args['rewrite'] = ["slug" => "{$this->rewrite}", 'with_front' => false];
+    /**
+     *  If taxonomy slug is not defined
+     *  rewrite categorys as  /post_type_slug/taxonomy_name/
+     */
+    if($this->taxonomy && !$this->taxonomy_slug) {
+      $slug = $this->name != $this->slug ? $this->slug : $this->name;
+      $rewrite_slug = "{$slug}/%{$this->taxonomy_name}%";
+      $args['rewrite'] = ["slug" => "$rewrite_slug", 'with_front' => false];
+    } elseif($this->name != $this->slug) {
+      $args['rewrite'] = ["slug" => "$this->slug", 'with_front' => false];
     }
 
     register_post_type("{$this->name}", $args);
@@ -98,23 +101,30 @@ class The_Project_Post_Type {
   //
   public function taxonomy() {
 
+    $taxonomy_slug = $this->taxonomy_slug != "" ? $this->taxonomy_slug : $this->slug;
+
     $args = [
       "labels" => [
-        'name' => $this->category_title,
-        'singular_name' => $this->category_items,
+        'name' => $this->taxonomy_title,
+        'singular_name' => $this->taxonomy_singular,
       ],
+      'show_admin_column' => $this->taxonomy_admin_column,
       "public" => true,
-      "hierarchical" => true, // true=category, false=tag
-      "rewrite" => ["slug" => "{$this->slug}", 'with_front' => false], // POST_TYPE_SLUG
+      "hierarchical" => true,
+      "rewrite" => ["slug" => "{$taxonomy_slug}", 'with_front' => false], 
     ];
 
-    register_taxonomy("$this->category_name", ["{$this->name}"], $args);
+    register_taxonomy("$this->taxonomy_name", ["{$this->name}"], $args);
 
   }
 
   // set posts per page
   public function posts_per_page($query) {
     if ( !is_admin() && $query->is_main_query() && is_post_type_archive("{$this->name}") ) {
+      $items_per_page = $this->posts_per_page;
+      $query->set('posts_per_page', $items_per_page);
+    }
+    if ($this->taxonomy && !is_admin() && $query->is_main_query() && $query->is_tax("$this->taxonomy_name")) {
       $items_per_page = $this->posts_per_page;
       $query->set('posts_per_page', $items_per_page);
     }
@@ -127,16 +137,15 @@ class The_Project_Post_Type {
    */
   public function rewrite_func($post_link, $post) {
     if ( is_object( $post ) && $post->post_type == $this->name) {
-      $terms = wp_get_object_terms( $post->ID, $this->category_name);
-      if($terms && !empty($this->category_name)) {
-        return str_replace( "%{$this->category_name}%" , $terms[0]->slug , $post_link );
+      $terms = wp_get_object_terms( $post->ID, $this->taxonomy_name);
+      if($terms && !empty($this->taxonomy_name)) {
+        return str_replace( "%{$this->taxonomy_name}%" , $terms[0]->slug , $post_link );
       } else {
-        return str_replace( "%{$this->category_name}%" , 'all' , $post_link );
+        return str_replace( "%{$this->taxonomy_name}%" , 'all' , $post_link );
       }
     }
     return $post_link;
   }
-
 
   /**
    *  Admin Columns
@@ -169,6 +178,7 @@ class The_Project_Post_Type {
 
   }
 
+  // column callback
   public function add_admin_column_cb($post_id, $field_name) {
     $meta = get_post_meta( $post_id , $field_name , true );
     $out = "";
@@ -179,7 +189,6 @@ class The_Project_Post_Type {
       echo $meta;
     }
   }
-
 
 
 }

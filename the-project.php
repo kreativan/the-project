@@ -15,7 +15,8 @@ include_once("classes/submenu.php");
 include_once("classes/settings.php");
 
 // includes
-include_once("functions.php");
+include_once("includes/functions.php");
+include_once("includes/init.php");
 
 /**
  *  The Project Data
@@ -27,7 +28,7 @@ function the_project($field = "") {
 
   $project = [
 
-    "name" => "Kreativan",
+    "name" => "The Project",
     "title" => "Custom Project",
     "developer" => "Ivan Milincic",
     "website" => "https://kreativan.dev"
@@ -78,9 +79,8 @@ new The_Project([
   "ajax" => the_project("ajax"),
 
   /**
-   *  Enable htmx and htmx route
-   *  http request on /htmx/my-file/
-   *  will call for /my-theme/htmx/my-file.php
+   *  Load htmx lib
+   *  Use /ajax/ route to fetch content
    */
   "htmx" => the_project("htmx"),
   "htmx_version" => "1.7.0",
@@ -93,7 +93,7 @@ new The_Project([
    *  @example ["my_file" => "my_file_url.js"]
    */
   "js" => [
-    "project_js" => plugin_dir_url(__FILE__) . "js/project.js",
+    "project_js" => plugin_dir_url(__FILE__) . "assets/the_project.js",
   ],
 
   /**
@@ -103,40 +103,74 @@ new The_Project([
   "css" => [],
 
   /**
-   *  SMTP
-   *  Use smtp to send email from the website
+   *  WooCommerce
+   *  Let plugin handle basic woocommerce stuff
+   *  @var string woocommerce: true/false
+   *  Enable / Disable default styles
+   *  @var string woocommerce_styles: true/false
    */
-  "SMTP" => [
-    "from_email" => the_project('smtp_from_email'),
-    "from_name" => the_project('smtp_from_name'),
-    "host" => the_project('smtp_host'),
-    "port" => the_project('smtp_port'),
-    "secure" => the_project('smtp_secure'),
-    "username" => the_project('smtp_username'),
-    "password" => the_project('smtp_password'),
-  ],
+  "woocommerce" => the_project("woo") == "1" ? "true" : 'false',
+  "woocommerce_styles" => "false",
 
 ]);
 
-//  Init Project Settings (Developer Settings)
-// ===========================================================
 
+//  Init Project Settings (Developer Settings)
 new The_Project_Settings;
 
 
-//  Project Submenu
-// ===========================================================
+//-------------------------------------------------------- 
+//  SMTP
+//  Enable and set up SMPT from developer settings
+//-------------------------------------------------------- 
+
+if(the_project('smtp_enable') == '1') {
+
+  add_action( 'phpmailer_init', 'the_project_SMTP' );
+
+  function the_project_SMTP($phpmailer) {
+
+    $from_email = the_project('smtp_from_email');
+    $from_name = the_project('smtp_from_name');
+
+    $phpmailer->IsSMTP();
+    $phpmailer->SetFrom($from_email, $from_name);
+    $phpmailer->Host = the_project('smtp_host');
+    $phpmailer->Port = the_project('smtp_port');
+    $phpmailer->SMTPAuth = true;
+    $phpmailer->SMTPSecure = the_project('smtp_secure');
+    $phpmailer->Username = the_project('smtp_username');
+    $phpmailer->Password = the_project('smtp_password');
+
+  }
+
+}
+
+//-------------------------------------------------------- 
+//  Custom Submenus
+//  You can add custom project submenus here
+//  ["view" => "my_file"] - /views/my_file.php 
+//-------------------------------------------------------- 
 
 new The_Project_Sub_Menu([
   "title" => "Submenu",
   "slug" => "project-submenu",
-  "view" => "submenu",
+  "view" => "submenu"
 ]);
 
-//  Forms
-// ===========================================================
+//-------------------------------------------------------- 
+//  Custom Post Types
+//  Include custom post types here
+//  so they appear on top of the project submenu
+//-------------------------------------------------------- 
 
-$forms = [
+include_once("post-types.php");
+
+//-------------------------------------------------------- 
+//  Default Post Types and Menus
+//-------------------------------------------------------- 
+
+new The_Project_Post_Type([
   "name" => "project-forms",
   "title" => 'Forms',
   "item_title" => 'Form',
@@ -148,72 +182,13 @@ $forms = [
   "supports" => ['title'],
   "has_archive" => "false",
   "taxonomy" => "false",
-];
-
-new The_Project_Post_Type($forms);
+]);
 
 new The_Project_Sub_Menu([
   "title" => __('Forms'),
   "slug" => "edit.php?post_type=project-forms"
 ]);
 
-
-//  Katalog Post Type Example
-// ===========================================================
-
-$katalog_per_page = get_field("katalog_per_page", "options");
-
-$katalog = [
-  "name" => "katalog",
-  "title" => "Katalog",
-  "item_title" => "Katalog Item",
-  "slug" => "katalog",
-  "menu_position" => 2,
-  "menu_icon" => "dashicons-archive",
-  "has_archive" => "true",
-  "taxonomy" => "true",
-  "posts_per_page" => $katalog_per_page,
-  "category_name" => "katalog_category",
-  "rewrite" => "katalog/%katalog_category%",
-  "rewrite_func" => "true",
-  "gutenberg" => "false",
-  "admin_columns" => [
-    'ganre' => 'Ganre',
-    'year' => 'Realise Year',
-    'maker' => "Studio",
-  ]
-];
-
-new The_Project_Post_Type($katalog);
-
-//  Documentation
-// ===========================================================
-$docs = [
-  "name" => "docs",
-  "slug" => 'documentation',
-  "title" => __('Documentation'),
-  "item_title" => __('Documentation Page'),
-  "show_in_menu" => "false",
-  "menu_position" => 1,
-  "menu_icon" => 'dashicons-text',
-  "hierarchical" => "true", // true=pages, false=posts
-  "exclude_from_search" => "false",
-  "supports" => ['title', 'editor'],
-  "has_archive" => "true",
-  "taxonomy" => "false",
-  "rewrite" => "documentation",
-  //"rewrite_func" => "false",
-];
-
-new The_Project_Post_Type($docs);
-
-new The_Project_Sub_Menu([
-  "title" => __('Documentation'),
-  "slug" => "edit.php?post_type=docs"
-]);
-
-//  Translate
-// ===========================================================
 
 new The_Project_Sub_Menu([
   "title" => "Translate",

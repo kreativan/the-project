@@ -1,10 +1,9 @@
-<style>
 #wpbody {
   padding-right: 20px;
 }
 
 #wpbody h2 {
-  font-size:1.3rem;
+  font-size:1.1rem;
 }
 
 /*  Utility
@@ -28,7 +27,7 @@
 }
 
 .padding {
-  padding: 10px;
+  padding: 15px;
 }
 
 /*  Grid
@@ -93,26 +92,44 @@
 /*  Table
 =========================================================== */
 
-table {
+.the-project-form table,
+.the-project-table {
   width:100%;
   border-collapse:collapse;
 }
-table td {
+
+.the-project-form table td,
+.the-project-table td {
   padding: 7px 5px;
+  vertical-align: middle;
 }
-table th {
+
+.the-project-form table th,
+.the-project-table th {
+  vertical-align: middle;
   text-align: left;
-  background: #f8f8f8;
   color: #333;
   padding: 5px;
 }
-table tr:nth-child(even) td {
+
+.the-project-table.the-project-table-striped th {
   background: #f8f8f8;
+}
+
+.the-project-table.the-project-table-striped tr:nth-child(even) {
+  background: #f8f8f8;
+}
+
+.the-project-form table tr:nth-child(odd) {
+  background: #f8f8f8;
+}
+.the-project-form table fieldset label {
+  margin-right: 20px !important;
 }
 
 /*  panel
 =========================================================== */
-.panel {
+.the-project-panel {
   display: block;
   box-sizing: border-box;
   position: relative;
@@ -120,9 +137,19 @@ table tr:nth-child(even) td {
   border-radius: 3px;
   overflow: hidden;
 }
-.panel-title {
+.the-project-panel-title {
   margin: 10px;
   font-size: 1rem;
 }
 
-</style>
+/*  ACF
+=========================================================== */
+
+.acf-flexible-content .layout .acf-fc-layout-handle {
+  background: #1d2327; 
+  color: white !important;
+}
+
+.acf-flexible-content .acf-icon.-clear {
+  background: white;
+}

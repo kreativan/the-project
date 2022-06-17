@@ -7,7 +7,6 @@ WordPress plugin for building custom websites.
 * Less Compiler
 * Valitron Library
 * Ajax routing: `/ajax/test/ => my_theme/ajax/tets.php`
-* HTMX integration and routing: `/htmx/test/ => my_theme/htmx/test.php`
 * SMTP options
 * JavaScript helpers
 * Easy to add new admin menu items
@@ -22,7 +21,7 @@ function the_project($field = "") {
 
   $project = [
 
-    "name" => "Kreativan",
+    "name" => "The Project",
     "title" => "Custom Project",
     "developer" => "Ivan Milincic",
     "website" => "https://kreativan.dev"
@@ -97,18 +96,14 @@ new The_Project([
   "css" => [],
 
   /**
-   *  SMTP
-   *  Use smtp to send email from the website
+   *  WooCommerce
+   *  Let plugin handle basic woocommerce stuff
+   *  @var string woocommerce: true/false
+   *  Enable / Disable default styles
+   *  @var string woocommerce_styles: true/false
    */
-  "SMTP" => [
-    "from_email" => the_project('smtp_from_email'),
-    "from_name" => the_project('smtp_from_name'),
-    "host" => the_project('smtp_host'),
-    "port" => the_project('smtp_port'),
-    "secure" => the_project('smtp_secure'),
-    "username" => the_project('smtp_username'),
-    "password" => the_project('smtp_password'),
-  ],
+  "woocommerce" => the_project("woo") == "1" ? "true" : 'false',
+  "woocommerce_styles" => "false",
 
 ]);
 ```
@@ -152,7 +147,7 @@ new The_Project_Sub_Menu([
 ### Create Post Types
 Use `The_Project_Post_Type` to create new post types
 ```
-// With Archive
+// With archive
 $katalog = [
   "name" => "katalog",
   "title" => "Katalog",
@@ -160,43 +155,37 @@ $katalog = [
   "slug" => "katalog",
   "menu_position" => 2,
   "menu_icon" => "dashicons-archive",
-  "has_archive" => "true",
+  "has_archive" => "true", // post type should have archive page?
+  "posts_per_page" => 12,
   "taxonomy" => "true",
-  "posts_per_page" => the_project('katalog_per_page'),
-  "category_name" => "katalog_category",
-  "rewrite" => "katalog/%katalog_category%",
-  "rewrite_func" => "true",
+  "taxonomy_title" => "Category",
+  "taxonomy_name" => "katalog_category",
+  "taxonomy_slug" => "katalog-category", // disable this to use /katalog/my-category/ rewrite
   "admin_columns" => [
     'ganre' => 'Ganre',
-    'year' => 'Realise Year',
-    'maker' => "Studio",
-  ],
+    'year' => 'Year',
+  ]
 ];
 
 new The_Project_Post_Type($katalog);
 
 // Pages only
-$hero = [
-  "name" => "hero",
-  "title" => "Hero",
-  "item_title" => "Hero item",
-  "show_in_menu" => "false",
-  "menu_position" => 1,
-  "menu_icon" => 'dashicons-slides',
-  "hierarchical" => "true", // true=pages, false=posts
-  "exclude_from_search" => "true",
-  "supports" => ['title', 'editor', 'thumbnail'],
-  "has_archive" => "false",
-  "rewrite" => "false",
-  "rewrite_func" => "false",
-];
+new The_Project_Post_Type([
+  "name" => "docs",
+  "slug" => 'docs',
+  "title" => __('Documentation'),
+  "item_title" => __('Documentation Page'),
+  "show_in_menu" => "false", // do not show in root admin menu
+  "exclude_from_search" => "false",
+  "supports" => ['title', 'editor'],
+  "has_archive" => "true",
+  "taxonomy" => "false",
+]);
 
-new The_Project_Post_Type($hero);
-
-// create hero submenu
+// Create submenu
 new The_Project_Sub_Menu([
-  "title" => "Hero",
-  "slug" => "edit.php?post_type=hero"
+  "title" => __('Documentation'),
+  "slug" => "edit.php?post_type=docs&orderby=title&order=desc" // sort by latest
 ]);
 ```
 
