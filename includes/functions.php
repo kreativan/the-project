@@ -207,7 +207,7 @@ function the_project_render($file_name, $vars = '') {
  *  if ( !$v->validate() ) print_r( $v->errors() );
  */
 function the_project_valitron($array, $lang = "en") {
-  require_once(__DIR__."/valitron/src/Valitron/Validator.php");
+  require_once(__DIR__."/../valitron/src/Valitron/Validator.php");
   Valitron\Validator::lang($lang);
   $v = new Valitron\Validator($array);
   return $v;
